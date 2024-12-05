@@ -3,10 +3,16 @@ package util
 import (
 	"gf2gacha/config"
 	"gf2gacha/logger"
-	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"github.com/pkg/errors"
+)
+
+const (
+	GameDirNameCN     = "少女前线2：追放"
+	GameDirNameGlobal = "EXILIUM"
 )
 
 func GetGameDataDir() (string, error) {
@@ -15,9 +21,14 @@ func GetGameDataDir() (string, error) {
 		return "", errors.WithStack(err)
 	}
 
-	logPath := filepath.Join(userHome, "/AppData/LocalLow/SunBorn/少女前线2：追放/Player.log")
-	logData, err := os.ReadFile(logPath)
-	if err != nil {
+	var logData []byte
+	logPathCN := filepath.Join(userHome, "/AppData/LocalLow/SunBorn/", GameDirNameCN, "/Player.log")
+	logPathGlobal := filepath.Join(userHome, "/AppData/LocalLow/SunBorn/", GameDirNameGlobal, "/Player.log")
+	if data, err := os.ReadFile(logPathCN); err == nil {
+		logData = data
+	} else if data, err := os.ReadFile(logPathGlobal); err == nil {
+		logData = data
+	} else {
 		return "", errors.WithStack(err)
 	}
 
